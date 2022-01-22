@@ -5,51 +5,63 @@ import (
 	"testing"
 )
 
+func validateMoveTo(t *testing.T, mo *MoveOptimizer, to []int, score int) {
+
+	moves := mo.perfectMove[0]
+
+	escore := moves[0].score
+	if score != escore {
+		t.Errorf("Wrong score! score=%v escore=%v  emove=%v", score, escore, to)
+		return
+	}
+
+	if len(moves) != len(to) {
+		t.Errorf("Wrong move length! moves=%v emove=%v", moves, to)
+		return
+	}
+	for i := 0; i < len(to); i++ {
+		if moves[i].toField != to[i] {
+			t.Errorf("Wrong move! moves=%v emove=%v", moves, to)
+			return
+		}
+	}
+}
+
 func TestMoveOptimizerSingle(t *testing.T) {
 
 	// Search for highest field move
-	mo := MoveOptimizer{rater: EvalHighestField{}}
+	mo := MoveOptimizer{rater: EvalHighestField{}, rateField: HighestFieldsRater{}}
 
 	// Evaluate with one stone; one level
-	move := mo.calcBestMoveSingle(Fields{0}, Fields{}, 1)
-	success := move.toField == 9
-	move = mo.calcBestMoveSingle(Fields{4}, Fields{}, 1)
-	success = success && move.toField == 7
-	move = mo.calcBestMoveSingle(Fields{22}, Fields{}, 1)
-	success = success && move.toField == 23
-	move = mo.calcBestMoveSingle(Fields{23}, Fields{}, 1)
-	success = success && move.toField == 22
-	move = mo.calcBestMoveSingle(Fields{17}, Fields{}, 1)
-	success = success && move.toField == 16
-	if !success {
-		t.Errorf("Wrong move (evauluate one stone to highest field)!")
-	}
+	move := mo.calcBestMoveDouble(Fields{0}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{9}, 9)
+	mo.calcBestMoveDouble(Fields{4}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{7}, 7)
+	mo.calcBestMoveDouble(Fields{22}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{23}, 23)
+	mo.calcBestMoveDouble(Fields{23}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{22}, 22)
+	mo.calcBestMoveDouble(Fields{17}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{16}, 16)
 
 	// Evaluate with two stones; one level
-	move = mo.calcBestMoveSingle(Fields{0, 2}, Fields{}, 1)
-	success = move.toField == 14 && mo.moveCounter == 4
-	move = mo.calcBestMoveSingle(Fields{20, 9}, Fields{}, 1)
-	success = success && move.toField == 21
-	success = success && mo.moveCounter == 5
-	if !success {
-		t.Errorf("Wrong move (evaluate two stones to highest field")
-	}
+	mo.calcBestMoveDouble(Fields{0, 2}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{14}, 14)
+	mo.calcBestMoveDouble(Fields{20, 9}, Fields{}, 0, 1)
+	validateMoveTo(t, &mo, []int{21}, 41)
 
-	// Evaluate with one stone; more levels
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{}, 2)
-	success = move.score == 21 && mo.moveCounter == 8
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{}, 3)
-	success = success && move.score == 22
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{}, 4)
-	success = success && move.score == 23
-	if !success {
-		t.Errorf("Wrong move (evaluate one stones multiple levels")
-	}
+	// Evaluate with two stones; more levels
+	mo.calcBestMoveDouble(Fields{0}, Fields{2}, 0, 2)
+	validateMoveTo(t, &mo, []int{9, 14}, -5)
+	mo.calcBestMoveDouble(Fields{0}, Fields{2}, 0, 3)
+	validateMoveTo(t, &mo, []int{9, 14, 21}, 7)
+	mo.calcBestMoveDouble(Fields{0}, Fields{2}, 0, 4)
+	validateMoveTo(t, &mo, []int{9, 14, 21, 23}, -2)
 
 	// Evaluate with one stone; from every field; until stone is on 23
 	for i := 0; i < 24; i++ {
 		for j := 1; j < 20; j++ {
-			move = mo.calcBestMoveSingle(Fields{i}, Fields{}, j)
+			move = mo.calcBestMoveDouble(Fields{i}, Fields{}, 0, j)
 			if move.score == 23 {
 				// fmt.Printf("found: from: %v level: %v\n", i, j)
 				break
@@ -61,27 +73,21 @@ func TestMoveOptimizerSingle(t *testing.T) {
 func TestMoveOptimizerB(t *testing.T) {
 
 	// Search for highest field move
-	mo := MoveOptimizer{rater: EvalHighestField{}}
+	mo := MoveOptimizer{rater: EvalHighestField{}, rateField: HighestFieldsRater{}}
 
 	// Evaluate with one stone; with player B; one level
-	move := mo.calcBestMoveSingle(Fields{0}, Fields{1}, 1)
-	success := move.toField == 9
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{9}, 1)
-	success = success && move.toField == 1
-	if !success {
-		t.Errorf("Wrong move (evauluate one stone to highest field)!")
-	}
+	mo.calcBestMoveDouble(Fields{0}, Fields{1}, 0, 1)
+	validateMoveTo(t, &mo, []int{9}, 8)
+	mo.calcBestMoveDouble(Fields{0}, Fields{9}, 0, 1)
+	validateMoveTo(t, &mo, []int{1}, -8)
 
 	// Evaluate with one stone; with player B; more levels
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{9}, 2)
-	success = move.toField == 1 && move.score == 4
-	move = mo.calcBestMoveSingle(Fields{17}, Fields{22}, 3)
-	success = success && move.toField == 12 && move.score == 20
-	move = mo.calcBestMoveSingle(Fields{0}, Fields{22}, 4)
-	success = success && move.toField == 1 && move.score == 23
-	if !success {
-		t.Errorf("Wrong move (evauluate one stone to highest field)! %v", move)
-	}
+	mo.calcBestMoveDouble(Fields{0}, Fields{9}, 0, 2)
+	validateMoveTo(t, &mo, []int{1, 21}, -20)
+	mo.calcBestMoveDouble(Fields{17}, Fields{22}, 0, 3)
+	validateMoveTo(t, &mo, []int{16, 23, 19}, -4)
+	mo.calcBestMoveDouble(Fields{0}, Fields{22}, 0, 4)
+	validateMoveTo(t, &mo, []int{9, 21, 10, 22}, -12)
 }
 
 func TestMoveOptimizerMulti(t *testing.T) {

@@ -28,66 +28,9 @@ type MoveOptimizer struct {
 	moveCounter int
 }
 
-// Calculate the best move on the current level - Single player mode
-func (mo *MoveOptimizer) calcBestMoveSingle(stonesA Fields, stonesB Fields, levelMax int) Move {
-
-	DebugLogger.Printf("calc best move for stones: %v level_max: %d\n", stonesA, levelMax)
-	level := 0
-	mo.moveCounter = 0
-
-	// Maintain a MoveGenerator for each level
-	mo.moveGenerator = make([]MoveGenerator, levelMax)
-	mo.moveGenerator[0].reset(moveStone, stonesA, stonesB)
-	mo.bestMove = make([]Move, levelMax)
-	mo.bestMove[0].reset()
-
-	// Iterate over all possible moves
-	for {
-		// In this level generate a new move
-		move := mo.moveGenerator[level].nextMove()
-
-		if move.valid {
-			mo.moveCounter += 1
-			if level+1 == levelMax {
-				// On last level evaulate the result
-				value := mo.rater.rate(move)
-				if value > mo.bestMove[level].score {
-					// Found a better move -> save it
-					move.score = value
-					mo.bestMove[level] = move
-				}
-			} else {
-				// Go one level DOWN. We have to apply the move from the current to the next
-				srcStone := mo.moveGenerator[level].stonesA
-				dstStone := srcStone.cp()
-				dstStone[move.stoneIndex] = move.toField
-
-				// Prepare the move generator for the new level
-				level += 1
-				mo.moveGenerator[level].reset(moveStone, dstStone, stonesB)
-
-				// No best move yet, therefore reset this
-				mo.bestMove[level].reset()
-			}
-		} else {
-			// No more move possible on this level
-			if level == 0 {
-				// On level zero we are done
-				break
-			} else {
-				// Check the best value from child branch and go one level up
-				value := mo.bestMove[level].score
-				level -= 1
-				if value > mo.bestMove[level].score {
-					// We found a better branch -> Save move in this level with score from below
-					mo.bestMove[level] = mo.moveGenerator[level].current()
-					mo.bestMove[level].score = value
-				}
-			}
-		}
-	}
-	DebugLogger.Printf("best move: %v counter: %d\n", mo.bestMove[0], mo.moveCounter)
-	return mo.bestMove[0]
+// Return perfect move at given level
+func (mo *MoveOptimizer) pMove(level int) *Move {
+	return &mo.perfectMove[0][level]
 }
 
 func (mo *MoveOptimizer) initBestMove(levelMax int) {
@@ -173,5 +116,5 @@ func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, free
 	for idx, move := range mo.perfectMove[0] {
 		fmt.Printf("[%d] %v\n", idx, move)
 	}
-	return mo.bestMove[0]
+	return mo.perfectMove[0][0]
 }
