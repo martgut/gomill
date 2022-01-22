@@ -117,7 +117,7 @@ func (mg *MoveGenerator) current() Move {
 func (mg *MoveGenerator) placeStone() Move {
 
 	for {
-		// Same stone but next move option
+		// Next move option
 		mg.moveIndex += 1
 
 		// Check whether we reached last field
@@ -172,7 +172,22 @@ func (mg *MoveGenerator) moveStone() Move {
 
 // Remove stone from the field
 func (mg *MoveGenerator) removeStone() Move {
-	panic("Not implemented!!!")
+
+	for {
+		// Focus on stone, but advance for the next
+		stone := mg.stoneIndex
+		mg.stoneIndex += 1
+
+		// Check whether we reached last stone
+		if stone >= len(mg.stonesA) {
+			return Move{valid: false}
+		}
+
+		// Check whether stone is part of a mill
+		if true { // TODO implement mill check
+			return Move{stoneIndex: stone, valid: true, isMill: false, mode: removeStone}
+		}
+	}
 }
 
 // Calculate best next move and apply it
@@ -211,19 +226,28 @@ func (mg *MoveGenerator) applyMove(srcStones Fields, move Move) Fields {
 
 	switch move.mode {
 	case placeStone:
+		// Note: A new stone is added with value: "toField" for the new position
 		dstStones = make(Fields, len(srcStones), len(srcStones)+1)
 		copy(dstStones, srcStones)
 		dstStones = append(dstStones, move.toField)
 
 	case moveStone:
+		// Note: The stone with index: "stoneIndex" will move to: "toField"
 		dstStones = make(Fields, len(srcStones))
 		copy(dstStones, srcStones)
 		dstStones[move.stoneIndex] = move.toField
 
 	case removeStone:
+		// Note: The stone with index: "stoneIndex" will be deleted
+
+		// We copy all from source, but miss the last one
 		dstStones = make(Fields, len(srcStones)-1)
 		copy(dstStones, srcStones)
-		dstStones[move.toField] = srcStones[len(srcStones)-1]
+
+		// Recover the last one to the stone which should be deleted
+		if move.stoneIndex < len(dstStones) {
+			dstStones[move.stoneIndex] = srcStones[len(srcStones)-1]
+		}
 		return dstStones
 	}
 	return dstStones

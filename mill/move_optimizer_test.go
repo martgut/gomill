@@ -131,5 +131,6 @@ func TestClosingMill(t *testing.T) {
 
 	// Make a mill and remove stone
 	mo.calcBestMove(Fields{3, 0}, Fields{23}, 1, 2)
+	// TODO Investigate
 	//validateMoveTo(t, &mo, []int{23}, 23)
 }

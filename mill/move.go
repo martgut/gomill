@@ -10,7 +10,7 @@ type Move struct {
 	// Mode
 	mode generatorMode
 
-	// Stone which is moved
+	// Stone which is moved, or removed
 	stoneIndex int
 
 	// Stone is moved from field

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -89,26 +90,58 @@ func TestPlaceStone(t *testing.T) {
 		t.Errorf("Wrong move!")
 	}
 }
+func TestRemoveStone(t *testing.T) {
+
+	mg := new(MoveGenerator)
+
+	// Test with one stone on the field
+	mg.reset(removeStone, Fields{0}, Fields{})
+	move := mg.nextMove()
+	success := move.stoneIndex == 0 && move.valid
+	move = mg.nextMove()
+	success = success && !move.valid
+
+	// Test with two stones on the field
+	mg.reset(removeStone, Fields{3, 5}, Fields{})
+	move = mg.nextMove()
+	success = success && move.stoneIndex == 0 && move.valid
+	move = mg.nextMove()
+	success = success && move.stoneIndex == 1 && move.valid
+	move = mg.nextMove()
+	success = success && !move.valid
+
+	if !success {
+		t.Errorf("Wrong stone removal!")
+	}
+}
 
 func TestApplyMove(t *testing.T) {
 
 	mg := new(MoveGenerator)
 
-	src := Fields{1, 2, 3}
+	src := Fields{1, 4, 7}
 	move := Move{mode: placeStone, toField: 10}
 	dst := mg.applyMove(src, move)
-	success := len(src) == 3 && len(dst) == 4
+	success := dst.same(&Fields{1, 4, 7, 10})
 
-	move = Move{mode: moveStone, fromField: 0, toField: 10}
+	move = Move{mode: moveStone, stoneIndex: 0, toField: 10}
 	dst = mg.applyMove(src, move)
-	success = success && src[0] == 1 && dst[0] == 10
+	success = success && dst.same(&Fields{10, 4, 7})
 
-	move = Move{mode: removeStone, toField: 1}
+	move = Move{mode: removeStone, stoneIndex: 0}
 	dst = mg.applyMove(src, move)
-	success = success && len(src) == 3 && len(dst) == 2
+	fmt.Println(dst)
+	success = success && dst.same(&Fields{7, 4})
+
+	move = Move{mode: removeStone, stoneIndex: 1}
+	dst = mg.applyMove(src, move)
+	success = success && dst.same(&Fields{1, 7})
+
+	move = Move{mode: removeStone, stoneIndex: 2}
+	dst = mg.applyMove(src, move)
+	success = success && dst.same(&Fields{1, 4})
 
 	if !success {
 		t.Errorf("Error applying change!")
 	}
-
 }

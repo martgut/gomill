@@ -14,6 +14,20 @@ func (fields *Fields) contains(ff int) bool {
 	return false
 }
 
+// Check whether both fields are the same
+func (fields *Fields) same(fieldsOther *Fields) bool {
+
+	if len(*fields) != len(*fieldsOther) {
+		return false
+	}
+	for i := 0; i < len(*fields); i++ {
+		if (*fields)[i] != (*fieldsOther)[i] {
+			return false
+		}
+	}
+	return true
+}
+
 func (fields *Fields) asChar(f int) rune {
 	if fields.contains(f) {
 		return 'o'
