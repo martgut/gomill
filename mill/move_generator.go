@@ -60,7 +60,19 @@ type MoveGenerator struct {
 	currentMove Move
 }
 
+// Return Score factor according to involved players
+func (mg *MoveGenerator) scoreFactor(mg2 *MoveGenerator) int {
+	if mg.player == mg2.player {
+		// Keep the score
+		return 1
+	} else {
+		// Invert the score
+		return -1
+	}
+}
+
 func (mg *MoveGenerator) reset(mode generatorMode, stonesA Fields, stonesB Fields) {
+	mg.player = playerA
 	mg.mode = mode
 	mg.stonesA = stonesA
 	mg.stonesB = stonesB
@@ -82,7 +94,7 @@ func (mg *MoveGenerator) init(stonesA Fields, stonesB Fields, freeStones int) {
 	mg.freeStones = freeStones
 }
 
-func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, stonesB Fields, freeStones int) {
+func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, mgPrev *MoveGenerator) {
 
 	mg.moveIndex = -1
 	mg.stoneIndex = 0
@@ -90,18 +102,19 @@ func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, stonesB Fields, fr
 	if lastMove.isMill {
 		// Keep current player
 		fmt.Println("WASMILL")
+		mg.player = mgPrev.player
 		mg.stonesA = stonesA
-		mg.stonesB = stonesB
+		mg.stonesB = mgPrev.stonesB
 		mg.mode = removeStone
 	} else {
 		// Switch player
-		mg.player = (mg.player + 1) % 2
-		mg.stonesA = stonesB
+		mg.player = (mgPrev.player + 1) % 2
+		mg.stonesA = mgPrev.stonesB
 		mg.stonesB = stonesA
 
-		if freeStones > 0 {
+		if mgPrev.freeStones > 0 {
 			mg.mode = placeStone
-			mg.freeStones = freeStones - 1
+			mg.freeStones = mgPrev.freeStones - 1
 		} else {
 			mg.mode = moveStone
 		}

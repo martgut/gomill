@@ -5,3 +5,4 @@ Mill game written in Go
 
 * Implement and validate stone removal flow
 * Implement check for mill on stone removal
+* On stone removal score are not calculated correctly

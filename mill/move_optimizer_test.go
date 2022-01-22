@@ -4,11 +4,11 @@ import (
 	"testing"
 )
 
-func validateMoveTo(t *testing.T, mo *MoveOptimizer, to []int, score int) {
+func validateMoveTo(t *testing.T, mo *MoveOptimizer, to []int, escore int) {
 
 	moves := mo.perfectMove[0]
 
-	escore := moves[0].score
+	score := moves[0].score
 	if score != escore {
 		t.Errorf("Wrong score! score=%v escore=%v  moves=%v emove=%v", score, escore, moves, to)
 		return
