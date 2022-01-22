@@ -178,9 +178,11 @@ func (mg *MoveGenerator) nextApplyMove(srcStones Fields) (Move, Fields) {
 	move := mg.nextMove()
 	dstStones := mg.applyMove(srcStones, move)
 
-	// For debugging purpse
-	command := move.mode.String()
-	fmt.Printf("%-5s:  level %2d:  %s: %2d -> %2d  A: %2v B: %2v", command, mg.level, mg.player, move.fromField, move.toField, srcStones, dstStones)
+	// For debugging purpose
+	if move.valid {
+		pp := move.String()
+		fmt.Printf("%s[%d] %s: src: %2v dst: %2v", mg.player, mg.level, pp, srcStones, dstStones)
+	}
 	return move, dstStones
 }
 

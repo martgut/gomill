@@ -128,3 +128,12 @@ func TestPlaceStones(t *testing.T) {
 		t.Errorf("Wrong move (evauluate one stone to highest field)!")
 	}
 }
+
+func TestPlaceStones2(t *testing.T) {
+
+	// Search for highest field move
+	mo := MoveOptimizer{rateField: HighestFieldsRater{}}
+
+	move := mo.calcBestMoveDouble(Fields{}, Fields{}, 2, 2)
+	fmt.Printf("move: %v\n", move)
+}

@@ -38,5 +38,16 @@ func (move *Move) reset() {
 }
 
 func (move Move) String() string {
-	return fmt.Sprintf("%2d -> %2d score: %2d", move.fromField, move.toField, move.score)
+
+	var result string
+
+	switch move.mode {
+	case placeStone:
+		result = fmt.Sprintf("place:      -> %2d ", move.toField)
+	case removeStone:
+		result = fmt.Sprintf("remove:     -> %2d ", move.toField)
+	case moveStone:
+		result = fmt.Sprintf("move:   %2d -> %2d ", move.fromField, move.toField)
+	}
+	return result
 }

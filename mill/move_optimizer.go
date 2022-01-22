@@ -93,13 +93,18 @@ func (mo *MoveOptimizer) calcBestMoveSingle(stonesA Fields, stonesB Fields, leve
 func (mo *MoveOptimizer) initBestMove(levelMax int) {
 	// Maintain a MoveGenerator for each level
 	mo.moveGenerator = make([]MoveGenerator, levelMax)
-	for idx, mg := range mo.moveGenerator {
-		mg.level = idx
+	for idx := 0; idx < levelMax; idx++ {
+		mo.moveGenerator[idx].level = idx
 	}
 	mo.bestMove = make([]Move, levelMax)
 	mo.bestMove[0].score = math.MinInt32
-	//mo.perfectMove = make([]Move, levelMax)
 	mo.moveCounter = 0
+
+	// Each level has to store the list of perfect moves
+	mo.perfectMove = make([][]Move, levelMax)
+	for idx := 0; idx < levelMax; idx++ {
+		mo.perfectMove[idx] = make([]Move, 0)
+	}
 }
 
 // Calculate the best move on the current level - Multi player mode
@@ -126,6 +131,8 @@ func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, free
 					// Found a better move -> save it
 					move.score = score
 					mo.bestMove[level] = move
+					mo.perfectMove[level] = mo.perfectMove[level][:0]
+					mo.perfectMove[level] = append(mo.perfectMove[level], move)
 				}
 				fmt.Printf("   score: %2d\n", score)
 			} else {
@@ -136,7 +143,7 @@ func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, free
 
 				// No best move yet, therefore reset the new level
 				mo.bestMove[level].reset()
-				//mo.perfectMove[level] = mo.perfectMove[level][:0]
+				mo.perfectMove[level] = mo.perfectMove[level][:0]
 				fmt.Printf("\n")
 			}
 		} else {
@@ -150,18 +157,21 @@ func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, free
 			// The best for the child is the worst for the parent -> Inversion
 			score := -mo.bestMove[level].score
 			level -= 1
+			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, score, mo.bestMove[level].score)
 			if score > mo.bestMove[level].score {
 				// Use the best from the worst -> Save move in this level with score from below
-				current := mo.moveGenerator[level].current()
-				mo.bestMove[level] = current
-				mo.bestMove[level].score = score
+				currentMove := mo.moveGenerator[level].current()
+				currentMove.score = score
+				mo.bestMove[level] = currentMove
 
 				// Store perfect moves for this node
-				//mo.perfectMove[level] = append(mo.perfectMove[level+1], current)
+				mo.perfectMove[level] = append([]Move{currentMove}, mo.perfectMove[level+1]...)
 			}
-			fmt.Printf("score:  level %2d: %2d -> %2d\n", level, score, mo.bestMove[level].score)
 		}
 	}
-	fmt.Printf("\nbest move: %v total_moves: %d\n", mo.bestMove[0], mo.moveCounter)
+	fmt.Printf("perfect move (total=%d):\n", mo.moveCounter)
+	for idx, move := range mo.perfectMove[0] {
+		fmt.Printf("[%d] %v\n", idx, move)
+	}
 	return mo.bestMove[0]
 }
