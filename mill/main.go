@@ -27,8 +27,8 @@ func main() {
 	allMills.print()
 
 	// Evaluate with one stone
-	mo := MoveOptimizer{rater: EvalHighestField{}, rateField: HighestFieldsRater{}}
-	move := mo.calcBestMoveDouble(Fields{0, 3}, Fields{}, 0, 1)
+	mo := MoveOptimizer{rater: HighestFieldsRater{}}
+	move := mo.calcBestMove(Fields{0, 3}, Fields{}, 0, 1)
 	fmt.Println(move)
 	fmt.Printf("moves: %d\n", mo.moveCounter)
 

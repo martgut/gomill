@@ -7,11 +7,8 @@ import (
 
 type MoveOptimizer struct {
 
-	// Rating instance
-	rater Rater // TODO remove
-
 	// Instance which rates the field and provides scores
-	rateField RateField
+	rater RateField
 
 	// Move generator for each level
 	moveGenerator []MoveGenerator
@@ -51,7 +48,7 @@ func (mo *MoveOptimizer) initBestMove(levelMax int) {
 }
 
 // Calculate the best move on the current level - Multi player mode
-func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, freeStones int, levelMax int) Move {
+func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones int, levelMax int) Move {
 
 	fmt.Printf("\ncalc best move for stones player  A: %v stones player B: %v freeStones: %d level_max: %d\n", stonesA, stonesB, freeStones, levelMax)
 	level := 0
@@ -69,7 +66,7 @@ func (mo *MoveOptimizer) calcBestMoveDouble(stonesA Fields, stonesB Fields, free
 			if level+1 == levelMax {
 				// On last level evaulate the result
 				// Player A always coounts positive; B negative
-				score := mo.rateField.rate(dstStoneA) - mo.rateField.rate(mg.stonesB)
+				score := mo.rater.rate(dstStoneA) - mo.rater.rate(mg.stonesB)
 				if score > mo.bestMove[level].score {
 					// Found a better move -> save it
 					move.score = score
