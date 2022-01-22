@@ -123,3 +123,13 @@ func TestPlaceStones(t *testing.T) {
 	mo.calcBestMove(Fields{}, Fields{}, 3, 3)
 	validateMoveTo(t, &mo, []int{23, 22, 21}, 22)
 }
+
+func TestClosingMill(t *testing.T) {
+
+	// Search for highest field move
+	mo := MoveOptimizer{rater: CountStonesRater{}}
+
+	// Make a mill and remove stone
+	mo.calcBestMove(Fields{3, 0}, Fields{23}, 1, 2)
+	//validateMoveTo(t, &mo, []int{23}, 23)
+}

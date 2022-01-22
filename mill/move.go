@@ -47,7 +47,7 @@ func (move Move) String() string {
 	case removeStone:
 		result = fmt.Sprintf("remove:     -> %2d ", move.toField)
 	case moveStone:
-		result = fmt.Sprintf("move:   %2d -> %2d ", move.fromField, move.toField)
+		result = fmt.Sprintf("move:    %2d -> %2d ", move.fromField, move.toField)
 	}
 	return result
 }

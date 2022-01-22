@@ -112,7 +112,7 @@ func (m *Mills) print() {
 	}
 }
 
-// Check when stone placed on field, that mill exists
+// Check when stone is placed on field whether mills
 func (m *Mills) isMill(field int, stones Fields) int {
 
 	// Number of found mills

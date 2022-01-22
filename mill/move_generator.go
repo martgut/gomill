@@ -89,9 +89,9 @@ func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, stonesB Fields, fr
 
 	if lastMove.isMill {
 		// Keep current player
+		fmt.Println("WASMILL")
 		mg.stonesA = stonesA
 		mg.stonesB = stonesB
-
 		mg.mode = removeStone
 	} else {
 		// Switch player
@@ -127,8 +127,12 @@ func (mg *MoveGenerator) placeStone() Move {
 		// Check for free field
 		to := mg.moveIndex
 		if !mg.stonesA.contains(to) && !mg.stonesB.contains(to) {
-			//fmt.Printf("Found free: %v\n", to)
-			return Move{toField: to, valid: true, mode: placeStone}
+			// Check for closing mill
+			mill := allMills.isMill(to, mg.stonesA) > 0
+			if mill {
+				fmt.Println("MILL")
+			}
+			return Move{toField: to, valid: true, mode: placeStone, isMill: mill}
 		}
 	}
 }
@@ -168,7 +172,7 @@ func (mg *MoveGenerator) moveStone() Move {
 
 // Remove stone from the field
 func (mg *MoveGenerator) removeStone() Move {
-	return Move{}
+	panic("Not implemented!!!")
 }
 
 // Calculate best next move and apply it
