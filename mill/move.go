@@ -43,9 +43,9 @@ func (move Move) String() string {
 
 	switch move.mode {
 	case placeStone:
-		result = fmt.Sprintf("place:      -> %2d ", move.toField)
+		result = fmt.Sprintf("place:      +  %2d ", move.toField)
 	case removeStone:
-		result = fmt.Sprintf("remove:     -> %2d ", move.toField)
+		result = fmt.Sprintf("remove:     -  %2d ", move.toField)
 	case moveStone:
 		result = fmt.Sprintf("move:    %2d -> %2d ", move.fromField, move.toField)
 	}

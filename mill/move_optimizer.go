@@ -95,7 +95,8 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 
 			// UP one level: Use the score from child branch and go one level up
 			// The best for the child is the worst for the parent -> Inversion
-			factor := mg.scoreFactor(&mo.moveGenerator[level-1])
+			// TODO factor := mg.scoreFactor(&mo.moveGenerator[level-1])
+			factor := -1
 			score := mo.bestMove[level].score * factor
 			level -= 1
 			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, score, mo.bestMove[level].score)
@@ -110,7 +111,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 			}
 		}
 	}
-	fmt.Printf("perfect move (total=%d):\n", mo.moveCounter)
+	fmt.Printf("perfect move: total=%d score=%v:\n", mo.moveCounter, mo.pMove(0).score)
 	for idx, move := range mo.perfectMove[0] {
 		fmt.Printf("[%d] %v\n", idx, move)
 	}

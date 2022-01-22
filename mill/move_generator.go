@@ -101,11 +101,12 @@ func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, mgPrev *MoveGenera
 
 	if lastMove.isMill {
 		// Keep current player
-		fmt.Println("WASMILL")
 		mg.player = mgPrev.player
-		mg.stonesA = stonesA
-		mg.stonesB = mgPrev.stonesB
 		mg.mode = removeStone
+
+		// Still have to switch stones
+		mg.stonesA = mgPrev.stonesB
+		mg.stonesB = stonesA
 	} else {
 		// Switch player
 		mg.player = (mgPrev.player + 1) % 2
@@ -142,9 +143,6 @@ func (mg *MoveGenerator) placeStone() Move {
 		if !mg.stonesA.contains(to) && !mg.stonesB.contains(to) {
 			// Check for closing mill
 			mill := allMills.isMill(to, mg.stonesA) > 0
-			if mill {
-				fmt.Println("MILL")
-			}
 			return Move{toField: to, valid: true, mode: placeStone, isMill: mill}
 		}
 	}
@@ -195,10 +193,9 @@ func (mg *MoveGenerator) removeStone() Move {
 		if stone >= len(mg.stonesA) {
 			return Move{valid: false}
 		}
-
 		// Check whether stone is part of a mill
 		if true { // TODO implement mill check
-			return Move{stoneIndex: stone, valid: true, isMill: false, mode: removeStone}
+			return Move{stoneIndex: stone, toField: mg.stonesA[stone], valid: true, isMill: false, mode: removeStone}
 		}
 	}
 }
