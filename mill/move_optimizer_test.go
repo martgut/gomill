@@ -130,7 +130,7 @@ func TestClosingMill(t *testing.T) {
 	mo := MoveOptimizer{rater: CountStonesRater{}}
 
 	// Make a mill and remove stone
-	mo.calcBestMove(Fields{3, 0}, Fields{23}, 1, 2)
+	mo.calcBestMove(Fields{0, 1}, Fields{23}, 1, 2)
 	// TODO Investigate
 	//validateMoveTo(t, &mo, []int{23}, 23)
 }

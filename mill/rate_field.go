@@ -23,5 +23,5 @@ type CountStonesRater struct {
 
 func (CountStonesRater) rate(stones Fields) int {
 	// Count the number of stones on the field
-	return len(stones)
+	return len(stones) * 10
 }
