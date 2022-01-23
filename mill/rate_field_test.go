@@ -27,3 +27,25 @@ func TestCountStonesRaster(t *testing.T) {
 		t.Errorf("Error rating field!")
 	}
 }
+
+func TestEvenRater(t *testing.T) {
+	rater := EvenFieldRater{}
+	status := rater.rate(Fields{}) == 0
+	status = status && rater.rate(Fields{0}) == 1
+	status = status && rater.rate(Fields{0, 1, 2}) == 2
+
+	if !status {
+		t.Errorf("Wrong rating!")
+	}
+}
+
+func TestMultiplexRater(t *testing.T) {
+	rater := MultiplexRater{raters: []RateField{EvenFieldRater{}, EvenFieldRater{}}}
+	status := rater.rate(Fields{}) == 0
+	status = status && rater.rate(Fields{0}) == 2
+	status = status && rater.rate(Fields{0, 1, 2}) == 4
+
+	if !status {
+		t.Errorf("Wrong rating!")
+	}
+}
