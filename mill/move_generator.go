@@ -2,15 +2,34 @@ package main
 
 import "fmt"
 
-type playerT int64
+type playerT int
 
 const (
-	playerA playerT = iota
-	playerB
+	playerA playerT = 1
+	playerB playerT = -1
 )
 
 func (pl playerT) String() string {
-	return []string{"A", "B"}[pl]
+	if pl == playerA {
+		return "A"
+	}
+	return "B"
+}
+
+// Which stones are used for playing
+type stoneT int
+
+const (
+	stoneA stoneT = 1
+	stoneB stoneT = -1
+)
+
+func (pl stoneT) String() string {
+	if pl == stoneA {
+		return "A"
+	} else {
+		return "B"
+	}
 }
 
 type generatorMode int64
@@ -40,6 +59,9 @@ type MoveGenerator struct {
 
 	// Current player
 	player playerT
+
+	// Which stones are used for playing (A/B)?
+	stones stoneT
 
 	// List of stones to generate moves for player A
 	stonesA Fields
@@ -73,6 +95,7 @@ func (mg *MoveGenerator) scoreFactor(mg2 *MoveGenerator) int {
 
 func (mg *MoveGenerator) reset(mode generatorMode, stonesA Fields, stonesB Fields) {
 	mg.player = playerA
+	mg.stones = stoneA
 	mg.mode = mode
 	mg.stonesA = stonesA
 	mg.stonesB = stonesB
@@ -87,11 +110,18 @@ func (mg *MoveGenerator) init(stonesA Fields, stonesB Fields, freeStones int) {
 	} else {
 		mg.mode = moveStone
 	}
+	mg.player = playerA
+	mg.stones = stoneA
 	mg.stonesA = stonesA
 	mg.stonesB = stonesB
 	mg.moveIndex = -1
 	mg.stoneIndex = 0
 	mg.freeStones = freeStones
+}
+
+// Compares two scores and returns whether second is better
+func (mg *MoveGenerator) evalScore(newScore int, currentScore int) bool {
+	return newScore > currentScore
 }
 
 func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, mgPrev *MoveGenerator) {
@@ -105,11 +135,13 @@ func (mg *MoveGenerator) setup(lastMove Move, stonesA Fields, mgPrev *MoveGenera
 		mg.mode = removeStone
 
 		// Still have to switch stones
+		mg.stones = mgPrev.stones * -1
 		mg.stonesA = mgPrev.stonesB
 		mg.stonesB = stonesA
 	} else {
 		// Switch player
-		mg.player = (mgPrev.player + 1) % 2
+		mg.stones = mgPrev.stones * -1
+		mg.player = mgPrev.player * -1
 		mg.stonesA = mgPrev.stonesB
 		mg.stonesB = stonesA
 
@@ -210,7 +242,7 @@ func (mg *MoveGenerator) nextApplyMove(srcStones Fields) (Move, Fields) {
 	// For debugging purpose
 	if move.valid {
 		pp := move.String()
-		fmt.Printf("%s[%d] %s: src: %2v dst: %2v", mg.player, mg.level, pp, srcStones, dstStones)
+		fmt.Printf("%s%s[%d] %s: src: %2v dst: %2v", mg.player, mg.stones, mg.level, pp, srcStones, dstStones)
 	}
 	return move, dstStones
 }

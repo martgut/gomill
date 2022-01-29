@@ -67,7 +67,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 				// On last level evaulate the result
 				// Player A always coounts positive; B negative
 				score := mo.rater.rate(dstStoneA) - mo.rater.rate(mg.stonesB)
-				if score > mo.bestMove[level].score {
+				if mg.evalScore(score, mo.bestMove[level].score) {
 					// Found a better move -> save it
 					move.score = score
 					mo.bestMove[level] = move
@@ -100,7 +100,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 			score := mo.bestMove[level].score * factor
 			level -= 1
 			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, score, mo.bestMove[level].score)
-			if score > mo.bestMove[level].score {
+			if mg.evalScore(score, mo.bestMove[level].score) { // TODO is this the correct mg?
 				// Use the best from the worst -> Save move in this level with score from below
 				currentMove := mo.moveGenerator[level].current()
 				currentMove.score = score
