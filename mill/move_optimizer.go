@@ -47,8 +47,15 @@ func (mo *MoveOptimizer) initBestMove(levelMax int) {
 	}
 }
 
+func (mo *MoveOptimizer) printPerfectMove() {
+	fmt.Printf("perfect move: total=%d score=%v:\n", mo.moveCounter, mo.pMove(0).score)
+	for idx, move := range mo.perfectMove[0] {
+		fmt.Printf("[%d] %v\n", idx, move)
+	}
+}
+
 // Calculate the best move on the current level - Multi player mode
-func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones int, levelMax int) Move {
+func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones int, levelMax int) {
 
 	fmt.Printf("\ncalc best move for stones player  A: %v stones player B: %v freeStones: %d level_max: %d\n", stonesA, stonesB, freeStones, levelMax)
 	level := 0
@@ -110,9 +117,5 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 			}
 		}
 	}
-	fmt.Printf("perfect move: total=%d score=%v:\n", mo.moveCounter, mo.pMove(0).score)
-	for idx, move := range mo.perfectMove[0] {
-		fmt.Printf("[%d] %v\n", idx, move)
-	}
-	return mo.perfectMove[0][0]
+	mo.printPerfectMove()
 }

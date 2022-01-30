@@ -28,7 +28,8 @@ func main() {
 
 	// Evaluate with one stone
 	mo := MoveOptimizer{rater: HighestFieldsRater{}}
-	move := mo.calcBestMove(Fields{0, 3}, Fields{}, 0, 1)
+	mo.calcBestMove(Fields{0, 3}, Fields{}, 0, 1)
+	move := mo.perfectMove[0][0]
 	fmt.Println(move)
 	fmt.Printf("moves: %d\n", mo.moveCounter)
 

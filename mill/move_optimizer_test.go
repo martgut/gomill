@@ -60,7 +60,8 @@ func TestMoveOptimizerSimple(t *testing.T) {
 	// Evaluate with one stone; from every field; until stone is on 23
 	for i := 0; i < 24; i++ {
 		for j := 1; j < 20; j++ {
-			move := mo.calcBestMove(Fields{i}, Fields{}, 0, j)
+			mo.calcBestMove(Fields{i}, Fields{}, 0, j)
+			move := mo.perfectMove[0][0]
 			if move.score == 23 {
 				// fmt.Printf("found: from: %v level: %v\n", i, j)
 				break
