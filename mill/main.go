@@ -21,8 +21,7 @@ func init() {
 	ErrorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
-func main() {
-	fmt.Println("Welcome to Mill!")
+func test() {
 	allMoves.print()
 	allMills.print()
 
@@ -35,5 +34,11 @@ func main() {
 
 	stones := Fields{1, 2, 3}
 	stones.printPlayingField()
+}
 
+func main() {
+	fmt.Println("Welcome to Mill!")
+	game := newGame()
+	cmd := Command{}
+	cmd.process(game)
 }
