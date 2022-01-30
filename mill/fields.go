@@ -51,3 +51,30 @@ func (fields Fields) cp() Fields {
 	copy(dst, fields)
 	return dst
 }
+
+type playFieldT struct {
+	stonesA Fields
+	stonesB Fields
+	index   int
+}
+
+func (pf *playFieldT) asChar() rune {
+	c := '.'
+	if pf.stonesA.contains(pf.index) {
+		c = 'x'
+	} else if pf.stonesB.contains(pf.index) {
+		c = 'o'
+	}
+	pf.index += 1
+	return c
+}
+
+func (pf *playFieldT) printField() {
+	fmt.Printf("%c     %c     %c\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("  %c   %c   %c  \n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("    %c %c %c    \n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("%c %c %c   %c %c %c\n", pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("    %c %c %c    \n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("  %c   %c   %c  \n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("%c     %c     %c\n", pf.asChar(), pf.asChar(), pf.asChar())
+}

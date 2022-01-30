@@ -31,3 +31,9 @@ func (game *Game) calcBestMove() {
 	game.mo.calcBestMove(game.stonesA, game.stonesB, game.freeStones, game.level)
 	game.mo.printPerfectMove()
 }
+
+// Pretty print player field
+func (game *Game) print() {
+	pf := playFieldT{stonesA: game.stonesA, stonesB: game.stonesB}
+	pf.printField()
+}

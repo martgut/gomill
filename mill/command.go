@@ -9,13 +9,15 @@ import (
 )
 
 var allCmds = [][2]string{
+	{"apply", "Apply best move"},
 	{"exit", "Exit the game"},
-	{"field", "Show playing field"},
+	{"print", "Print playing field"},
 	{"help", "List all available commands"},
 	{"level", "Change level to new value"},
 	{"play", "Find best move and play"},
 	{"quit", "Quit the game"},
-	{"stone", "Set stone on field"},
+	{"stoneA", "Set stone for A on field"},
+	{"stoneB", "Set stone for B on field"},
 }
 
 type Command struct {
@@ -76,9 +78,8 @@ func (cmd *Command) process(game *Game) {
 			return
 		case "help":
 			cmd.print()
-		case "field":
-			game.stonesA.printPlayingField()
-			game.stonesB.printPlayingField()
+		case "print":
+			game.print()
 		case "level":
 			value, err := cmd.promptInt("Enter new level")
 			if err == nil {
@@ -86,6 +87,19 @@ func (cmd *Command) process(game *Game) {
 			}
 		case "play":
 			game.calcBestMove()
+		case "apply":
+			move := game.mo.perfectMove[0]
+			fmt.Println(move)
+		case "stoneA":
+			value, err := cmd.promptInt("Enter field")
+			if err == nil {
+				game.stonesA = append(game.stonesA, value)
+			}
+		case "stoneB":
+			value, err := cmd.promptInt("Enter field")
+			if err == nil {
+				game.stonesB = append(game.stonesB, value)
+			}
 		case "":
 			cmd.print()
 		default:
