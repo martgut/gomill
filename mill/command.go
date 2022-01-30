@@ -22,7 +22,7 @@ type Command struct {
 }
 
 func (cmd *Command) print() {
-	fmt.Printf("\nAvailable commands:\n")
+	fmt.Printf("Available commands:\n")
 	for _, value := range allCmds {
 		fmt.Printf("   %-8s: %v\n", value[0], value[1])
 	}
@@ -48,6 +48,7 @@ func (cmd *Command) prompt(label string) string {
 		}
 		command, _ = reader.ReadString('\n')
 		if command != "" {
+			fmt.Fprintf(os.Stderr, "\n")
 			break
 		}
 	}
@@ -65,6 +66,7 @@ func (cmd *Command) promptInt(label string) (int, error) {
 
 func (cmd *Command) process(game *Game) {
 
+	fmt.Printf("\nWelcome to Mill\n\n")
 	for {
 		command := cmd.prompt("")
 		switch command {
@@ -79,7 +81,7 @@ func (cmd *Command) process(game *Game) {
 			game.stonesB.printPlayingField()
 		case "level":
 			value, err := cmd.promptInt("Enter new level")
-			if err != nil {
+			if err == nil {
 				game.level = value
 			}
 		case "play":

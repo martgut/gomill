@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const DEBUG = false
+
 var (
 	DebugLogger   *log.Logger
 	WarningLogger *log.Logger
@@ -37,7 +39,6 @@ func test() {
 }
 
 func main() {
-	fmt.Println("Welcome to Mill!")
 	game := newGame()
 	cmd := Command{}
 	cmd.process(game)

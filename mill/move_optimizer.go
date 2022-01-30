@@ -48,23 +48,29 @@ func (mo *MoveOptimizer) initBestMove(levelMax int) {
 }
 
 func (mo *MoveOptimizer) printPerfectMove() {
-	fmt.Printf("perfect move: total=%d score=%v:\n", mo.moveCounter, mo.pMove(0).score)
+	fmt.Printf("perfect move: evaluated moves=%d score=%v:\n", mo.moveCounter, mo.pMove(0).score)
 	for idx, move := range mo.perfectMove[0] {
 		fmt.Printf("[%d] %v\n", idx, move)
+	}
+}
+
+func (mo *MoveOptimizer) printf(format string, a ...interface{}) {
+	if DEBUG {
+		fmt.Printf(format, a...)
 	}
 }
 
 // Calculate the best move on the current level - Multi player mode
 func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones int, levelMax int) {
 
-	fmt.Printf("\ncalc best move for stones player  A: %v stones player B: %v freeStones: %d level_max: %d\n", stonesA, stonesB, freeStones, levelMax)
+	mo.printf("\ncalc best move for stones player  A: %v stones player B: %v freeStones: %d level_max: %d\n", stonesA, stonesB, freeStones, levelMax)
 	level := 0
 	mo.initBestMove(levelMax)
 	mo.moveGenerator[0].init(stonesA, stonesB, freeStones)
 
 	// Iterate over all possible moves
 	for {
-		// In this level generate a new move
+		// Ggenerate a new move
 		mg := &mo.moveGenerator[level]
 		move, dstStoneA := mg.nextApplyMove(mg.stonesA)
 		if move.valid {
@@ -81,7 +87,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 					mo.perfectMove[level] = mo.perfectMove[level][:0]
 					mo.perfectMove[level] = append(mo.perfectMove[level], move)
 				}
-				fmt.Printf("   score: %2d\n", score)
+				mo.printf("   score: %2d\n", score)
 			} else {
 				// DOWN one level: Prepare the move generator for the new level
 				level += 1
@@ -91,7 +97,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 				// No best move yet, therefore reset the new level
 				mo.bestMove[level].reset(mgDown.stones)
 				mo.perfectMove[level] = mo.perfectMove[level][:0]
-				fmt.Printf("\n")
+				mo.printf("\n")
 			}
 		} else {
 			// No more move possible on this level
@@ -105,7 +111,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 			level -= 1
 			upScore := mo.bestMove[level].score
 			mgUp := &mo.moveGenerator[level]
-			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, downScore, upScore)
+			mo.printf(" [%d] up:     score: %2d > %2d\n", level, downScore, upScore)
 			if mgUp.evalScore(downScore, upScore) {
 				// Use the best from the worst -> Save move in this level with score from below
 				currentMove := mgUp.current()
@@ -117,5 +123,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 			}
 		}
 	}
-	mo.printPerfectMove()
+	if DEBUG {
+		mo.printPerfectMove()
+	}
 }

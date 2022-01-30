@@ -254,7 +254,9 @@ func (mg *MoveGenerator) nextApplyMove(srcStones Fields) (Move, Fields) {
 	// For debugging purpose
 	if move.valid {
 		pp := move.String()
-		fmt.Printf("%s%s[%d] %s: src: %2v dst: %2v", mg.player, mg.stones, mg.level, pp, srcStones, dstStones)
+		if DEBUG {
+			fmt.Printf("%s%s[%d] %s: src: %2v dst: %2v", mg.player, mg.stones, mg.level, pp, srcStones, dstStones)
+		}
 	}
 	return move, dstStones
 }

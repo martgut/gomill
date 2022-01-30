@@ -29,4 +29,5 @@ func newGame() *Game {
 // Calculate next best move
 func (game *Game) calcBestMove() {
 	game.mo.calcBestMove(game.stonesA, game.stonesB, game.freeStones, game.level)
+	game.mo.printPerfectMove()
 }
