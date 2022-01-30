@@ -65,8 +65,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 
 			if level+1 == levelMax {
 				// On last level evaulate the result
-				// Player A always coounts positive; B negative
-				score := mo.rater.rate(dstStoneA) - mo.rater.rate(mg.stonesB)
+				score := (mo.rater.rate(dstStoneA) - mo.rater.rate(mg.stonesB)) * int(mg.stones)
 				if mg.evalScore(score, mo.bestMove[level].score) {
 					// Found a better move -> save it
 					move.score = score
@@ -77,12 +76,12 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 				fmt.Printf("   score: %2d\n", score)
 			} else {
 				// DOWN one level: Prepare the move generator for the new level
-				// Note: switch to other player - it's his turn
 				level += 1
-				mo.moveGenerator[level].setup(move, dstStoneA, mg)
+				mgDown := &mo.moveGenerator[level]
+				mgDown.setup(move, dstStoneA, mg)
 
 				// No best move yet, therefore reset the new level
-				mo.bestMove[level].reset()
+				mo.bestMove[level].reset(mgDown.stones)
 				mo.perfectMove[level] = mo.perfectMove[level][:0]
 				fmt.Printf("\n")
 			}
@@ -93,17 +92,16 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 				break
 			}
 
-			// UP one level: Use the score from child branch and go one level up
-			// The best for the child is the worst for the parent -> Inversion
-			// TODO factor := mg.scoreFactor(&mo.moveGenerator[level-1])
-			factor := -1
-			score := mo.bestMove[level].score * factor
+			// UP one level: Use the downScore from child branch and go one level up
+			downScore := mo.bestMove[level].score
 			level -= 1
-			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, score, mo.bestMove[level].score)
-			if mg.evalScore(score, mo.bestMove[level].score) { // TODO is this the correct mg?
+			upScore := mo.bestMove[level].score
+			mgUp := &mo.moveGenerator[level]
+			fmt.Printf(" [%d] up:     score: %2d > %2d\n", level, downScore, upScore)
+			if mgUp.evalScore(downScore, upScore) {
 				// Use the best from the worst -> Save move in this level with score from below
-				currentMove := mo.moveGenerator[level].current()
-				currentMove.score = score
+				currentMove := mgUp.current()
+				currentMove.score = downScore
 				mo.bestMove[level] = currentMove
 
 				// Store perfect moves for this node

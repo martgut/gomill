@@ -32,7 +32,7 @@ func TestMoveOptimizerSimple(t *testing.T) {
 	mo := MoveOptimizer{rater: HighestFieldsRater{}}
 
 	// Evaluate with one stone; one level
-	move := mo.calcBestMove(Fields{0}, Fields{}, 0, 1)
+	mo.calcBestMove(Fields{0}, Fields{}, 0, 1)
 	validateMoveTo(t, &mo, []int{9}, 9)
 	mo.calcBestMove(Fields{4}, Fields{}, 0, 1)
 	validateMoveTo(t, &mo, []int{7}, 7)
@@ -60,7 +60,7 @@ func TestMoveOptimizerSimple(t *testing.T) {
 	// Evaluate with one stone; from every field; until stone is on 23
 	for i := 0; i < 24; i++ {
 		for j := 1; j < 20; j++ {
-			move = mo.calcBestMove(Fields{i}, Fields{}, 0, j)
+			move := mo.calcBestMove(Fields{i}, Fields{}, 0, j)
 			if move.score == 23 {
 				// fmt.Printf("found: from: %v level: %v\n", i, j)
 				break

@@ -29,12 +29,16 @@ type Move struct {
 	isMill bool
 }
 
-func (move *Move) reset() {
+func (move *Move) reset(stones stoneT) {
 	move.stoneIndex = 0
 	move.fromField = 0
 	move.toField = 0
 	move.valid = false
-	move.score = math.MinInt32
+	if stones == stoneA {
+		move.score = math.MinInt32
+	} else {
+		move.score = math.MaxInt32
+	}
 }
 
 func (move Move) String() string {
