@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 )
 
 // Attributes when a stone is moved
@@ -29,16 +28,15 @@ type Move struct {
 	isMill bool
 }
 
+// ScoreNotSet contains special value to indicate it was not calculated before
+const ScoreNotSet = 0xFFFF
+
 func (move *Move) reset(stones stoneT) {
 	move.stoneIndex = 0
 	move.fromField = 0
 	move.toField = 0
 	move.valid = false
-	if stones == stoneA {
-		move.score = math.MinInt32
-	} else {
-		move.score = math.MaxInt32
-	}
+	move.score = ScoreNotSet
 }
 
 func (move Move) String() string {

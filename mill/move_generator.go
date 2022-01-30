@@ -121,13 +121,18 @@ func (mg *MoveGenerator) init(stonesA Fields, stonesB Fields, freeStones int) {
 
 // Compares two scores and returns whether second is better
 func (mg *MoveGenerator) evalScore(newScore int, currentScore int) bool {
-	if mg.stones == stoneA {
+
+	if currentScore == ScoreNotSet {
+		// This is the 1st "best" move
+		return true
+	}
+
+	if mg.player == playerA {
 		// Player A with stones A counts positive
 		return newScore > currentScore
 	} else {
 		// Player B with stones B counts negative
 		return newScore < currentScore
-
 	}
 }
 

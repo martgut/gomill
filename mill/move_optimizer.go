@@ -65,6 +65,7 @@ func (mo *MoveOptimizer) calcBestMove(stonesA Fields, stonesB Fields, freeStones
 
 			if level+1 == levelMax {
 				// On last level evaulate the result
+				// A stones count positive; B stones count negative
 				score := (mo.rater.rate(dstStoneA) - mo.rater.rate(mg.stonesB)) * int(mg.stones)
 				if mg.evalScore(score, mo.bestMove[level].score) {
 					// Found a better move -> save it
