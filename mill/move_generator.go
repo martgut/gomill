@@ -249,7 +249,7 @@ func (mg *MoveGenerator) nextApplyMove(srcStones Fields) (Move, Fields) {
 
 	// Find and apply best move
 	move := mg.nextMove()
-	dstStones := mg.applyMove(srcStones, move)
+	dstStones := srcStones.applyMove(move)
 
 	// For debugging purpose
 	if move.valid {
@@ -273,38 +273,4 @@ func (mg *MoveGenerator) nextMove() Move {
 		mg.currentMove = mg.removeStone()
 	}
 	return mg.currentMove
-}
-
-// Apply move on stones and return new one
-func (mg *MoveGenerator) applyMove(srcStones Fields, move Move) Fields {
-
-	var dstStones Fields
-
-	switch move.mode {
-	case placeStone:
-		// Note: A new stone is added with value: "toField" for the new position
-		dstStones = make(Fields, len(srcStones), len(srcStones)+1)
-		copy(dstStones, srcStones)
-		dstStones = append(dstStones, move.toField)
-
-	case moveStone:
-		// Note: The stone with index: "stoneIndex" will move to: "toField"
-		dstStones = make(Fields, len(srcStones))
-		copy(dstStones, srcStones)
-		dstStones[move.stoneIndex] = move.toField
-
-	case removeStone:
-		// Note: The stone with index: "stoneIndex" will be deleted
-
-		// We copy all from source, but miss the last one
-		dstStones = make(Fields, len(srcStones)-1)
-		copy(dstStones, srcStones)
-
-		// Recover the last one to the stone which should be deleted
-		if move.stoneIndex < len(dstStones) {
-			dstStones[move.stoneIndex] = srcStones[len(srcStones)-1]
-		}
-		return dstStones
-	}
-	return dstStones
 }

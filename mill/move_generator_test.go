@@ -117,28 +117,26 @@ func TestRemoveStone(t *testing.T) {
 
 func TestApplyMove(t *testing.T) {
 
-	mg := new(MoveGenerator)
-
 	src := Fields{1, 4, 7}
 	move := Move{mode: placeStone, toField: 10}
-	dst := mg.applyMove(src, move)
+	dst := src.applyMove(move)
 	success := dst.same(&Fields{1, 4, 7, 10})
 
 	move = Move{mode: moveStone, stoneIndex: 0, toField: 10}
-	dst = mg.applyMove(src, move)
+	dst = src.applyMove(move)
 	success = success && dst.same(&Fields{10, 4, 7})
 
 	move = Move{mode: removeStone, stoneIndex: 0}
-	dst = mg.applyMove(src, move)
+	dst = src.applyMove(move)
 	fmt.Println(dst)
 	success = success && dst.same(&Fields{7, 4})
 
 	move = Move{mode: removeStone, stoneIndex: 1}
-	dst = mg.applyMove(src, move)
+	dst = src.applyMove(move)
 	success = success && dst.same(&Fields{1, 7})
 
 	move = Move{mode: removeStone, stoneIndex: 2}
-	dst = mg.applyMove(src, move)
+	dst = src.applyMove(move)
 	success = success && dst.same(&Fields{1, 4})
 
 	if !success {

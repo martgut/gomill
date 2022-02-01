@@ -52,6 +52,40 @@ func (fields Fields) cp() Fields {
 	return dst
 }
 
+// Apply move on stones and return new one
+func (fields Fields) applyMove(move Move) Fields {
+
+	var dstStones Fields
+
+	switch move.mode {
+	case placeStone:
+		// Note: A new stone is added with value: "toField" for the new position
+		dstStones = make(Fields, len(fields), len(fields)+1)
+		copy(dstStones, fields)
+		dstStones = append(dstStones, move.toField)
+
+	case moveStone:
+		// Note: The stone with index: "stoneIndex" will move to: "toField"
+		dstStones = make(Fields, len(fields))
+		copy(dstStones, fields)
+		dstStones[move.stoneIndex] = move.toField
+
+	case removeStone:
+		// Note: The stone with index: "stoneIndex" will be deleted
+
+		// We copy all from source, but miss the last one
+		dstStones = make(Fields, len(fields)-1)
+		copy(dstStones, fields)
+
+		// Recover the last one to the stone which should be deleted
+		if move.stoneIndex < len(dstStones) {
+			dstStones[move.stoneIndex] = fields[len(fields)-1]
+		}
+		return dstStones
+	}
+	return dstStones
+}
+
 type playFieldT struct {
 	stonesA Fields
 	stonesB Fields

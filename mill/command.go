@@ -50,7 +50,7 @@ func (cmd *Command) prompt(label string) string {
 		}
 		command, _ = reader.ReadString('\n')
 		if command != "" {
-			fmt.Fprintf(os.Stderr, "\n")
+			fmt.Fprintf(os.Stderr, "")
 			break
 		}
 	}
@@ -88,8 +88,8 @@ func (cmd *Command) process(game *Game) {
 		case "play":
 			game.calcBestMove()
 		case "apply":
-			move := game.mo.perfectMove[0]
-			fmt.Println(move)
+			move := game.mo.perfectMove[0][0]
+			game.stonesA = game.stonesA.applyMove(move)
 		case "stoneA":
 			value, err := cmd.promptInt("Enter field")
 			if err == nil {
@@ -105,5 +105,6 @@ func (cmd *Command) process(game *Game) {
 		default:
 			fmt.Printf("*** Unknown command: %v\n", command)
 		}
+		fmt.Println()
 	}
 }
