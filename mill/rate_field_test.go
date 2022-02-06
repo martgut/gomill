@@ -18,7 +18,7 @@ func TestHighestFieldRaster(t *testing.T) {
 
 func TestCountStonesRaster(t *testing.T) {
 
-	rater := CountStonesRater{}
+	rater := CountStonesRater{10}
 	status := rater.rate(Fields{}) == 0
 	status = status && rater.rate(Fields{1}) == 10
 	status = status && rater.rate(Fields{1, 23}) == 20
@@ -44,6 +44,18 @@ func TestMultiplexRater(t *testing.T) {
 	status := rater.rate(Fields{}) == 0
 	status = status && rater.rate(Fields{0}) == 2
 	status = status && rater.rate(Fields{0, 1, 2}) == 4
+
+	if !status {
+		t.Errorf("Wrong rating!")
+	}
+}
+
+func TestBestCrossingRater(t *testing.T) {
+	rater := BestCrossingRaster{}
+	status := rater.rate(Fields{}) == 0
+	status = status && rater.rate(Fields{0}) == 0
+	status = status && rater.rate(Fields{1}) == 1
+	status = status && rater.rate(Fields{4}) == 2
 
 	if !status {
 		t.Errorf("Wrong rating!")

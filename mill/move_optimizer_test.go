@@ -128,7 +128,7 @@ func TestPlaceStones(t *testing.T) {
 func TestClosingMillSimple(t *testing.T) {
 
 	// Search for highest field move
-	mo := MoveOptimizer{rater: CountStonesRater{}}
+	mo := MoveOptimizer{rater: CountStonesRater{10}}
 
 	// Make a mill and remove stone
 	mo.calcBestMove(Fields{0, 1}, Fields{23}, 1, 2)
@@ -138,7 +138,7 @@ func TestClosingMillSimple(t *testing.T) {
 func TestClosingMillSmart(t *testing.T) {
 
 	// Keep stone on even
-	rater := MultiplexRater{raters: []RateField{CountStonesRater{}, EvenFieldRater{value: 0}}}
+	rater := MultiplexRater{raters: []RateField{CountStonesRater{10}, EvenFieldRater{value: 0}}}
 	mo := MoveOptimizer{rater: &rater}
 
 	// Make a mill and remove stone: The one on the even field must remain!
@@ -147,7 +147,7 @@ func TestClosingMillSmart(t *testing.T) {
 	validateMoveTo(t, &mo, []int{2, 22}, 22)
 
 	// Keep stone on odd places
-	rater = MultiplexRater{raters: []RateField{CountStonesRater{}, EvenFieldRater{value: 1}}}
+	rater = MultiplexRater{raters: []RateField{CountStonesRater{10}, EvenFieldRater{value: 1}}}
 	mo = MoveOptimizer{rater: &rater}
 
 	// Make a mill and remove stone: The one on the odd field must remain!

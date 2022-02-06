@@ -16,8 +16,10 @@ var allCmds = [][2]string{
 	{"level", "Change level to new value"},
 	{"play", "Find best move and play"},
 	{"quit", "Quit the game"},
-	{"stoneA", "Set stone for A on field"},
-	{"stoneB", "Set stone for B on field"},
+	{"changeA", "Set stone for A on field"},
+	{"stone", "Set stone for B on field"},
+	{"write", "Save game to disk"},
+	{"read", "Read game from disk"},
 }
 
 type Command struct {
@@ -40,7 +42,8 @@ func (cmd *Command) isValid(command string) bool {
 }
 
 func (cmd *Command) prompt(label string) string {
-	var command string
+
+	var commands []string
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		if len(label) > 0 {
@@ -48,17 +51,31 @@ func (cmd *Command) prompt(label string) string {
 		} else {
 			fmt.Fprint(os.Stderr, "mill> ")
 		}
-		command, _ = reader.ReadString('\n')
-		if command != "" {
-			fmt.Fprintf(os.Stderr, "")
+		input, _ := reader.ReadString('\n')
+		input = input[:len(input)-1]
+		idx := 0
+		if input != "" {
+			for _, cmd := range allCmds {
+				if strings.HasPrefix(cmd[0], input) {
+					fmt.Fprintf(os.Stderr, "mill> %v\n", cmd[0])
+					idx += 1
+					commands = append(commands, cmd[0])
+				}
+			}
+		}
+		if idx == 1 {
 			break
 		}
+		fmt.Fprintf(os.Stderr, "mill> ? %v\n", commands)
 	}
-	return strings.TrimSpace(command)
+	return strings.TrimSpace(commands[0])
 }
 
 func (cmd *Command) promptInt(label string) (int, error) {
-	input := cmd.prompt(label)
+	fmt.Fprintf(os.Stderr, "%v: ", label)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
 	value, err := strconv.Atoi(input)
 	if err != nil {
 		fmt.Println("*** This is not a valid integer")
@@ -90,16 +107,26 @@ func (cmd *Command) process(game *Game) {
 		case "apply":
 			move := game.mo.perfectMove[0][0]
 			game.stonesA = game.stonesA.applyMove(move)
-		case "stoneA":
+			game.print()
+		case "changeA":
 			value, err := cmd.promptInt("Enter field")
 			if err == nil {
 				game.stonesA = append(game.stonesA, value)
 			}
-		case "stoneB":
+		case "stone":
 			value, err := cmd.promptInt("Enter field")
 			if err == nil {
 				game.stonesB = append(game.stonesB, value)
 			}
+			game.print()
+		case "write":
+			fileName := "game.json"
+			fmt.Printf("Saving game to file: %v\n", fileName)
+			game.writeToFile(fileName)
+		case "read":
+			fileName := "game.json"
+			fmt.Printf("Reading game from file: %v\n", fileName)
+			game.readFromFile(fileName)
 		case "":
 			cmd.print()
 		default:

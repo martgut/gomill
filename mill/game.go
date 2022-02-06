@@ -1,5 +1,11 @@
 package main
 
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+)
+
 type Game struct {
 	// Stones of player A
 	stonesA Fields
@@ -20,7 +26,7 @@ type Game struct {
 // Constructor to create new game
 func newGame() *Game {
 	game := new(Game)
-	game.mo.rater = HighestFieldsRater{}
+	game.mo.rater = MultiplexRater{raters: []RateField{CountStonesRater{100}, BestCrossingRaster{}}}
 	game.level = 3
 	game.freeStones = 18
 	return game
@@ -36,4 +42,38 @@ func (game *Game) calcBestMove() {
 func (game *Game) print() {
 	pf := playFieldT{stonesA: game.stonesA, stonesB: game.stonesB}
 	pf.printField()
+}
+
+// Save game to disk as JSON
+func (game *Game) writeToFile(fileName string) {
+
+	data := map[string]Fields{
+		"stonesA": game.stonesA,
+		"stonesB": game.stonesB,
+	}
+	file, _ := json.MarshalIndent(data, "", " ")
+	_ = ioutil.WriteFile(fileName, file, 0644)
+
+}
+
+// Save game to disk as JSON
+func (game *Game) readFromFile(fileName string) {
+
+	data := map[string]Fields{
+		"stonesA": game.stonesA,
+		"stonesB": game.stonesB,
+	}
+
+	content, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return
+	}
+	err = json.Unmarshal(content, &data)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return
+	}
+	game.stonesA = data["stonesA"]
+	game.stonesB = data["stonesB"]
 }
