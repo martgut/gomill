@@ -27,7 +27,7 @@ type Game struct {
 func newGame() *Game {
 	game := new(Game)
 	game.mo.rater = MultiplexRater{raters: []RateField{CountStonesRater{100}, BestCrossingRaster{}}}
-	game.level = 3
+	game.level = 4
 	game.freeStones = 18
 	return game
 }
@@ -40,7 +40,7 @@ func (game *Game) calcBestMove() {
 
 // Pretty print player field
 func (game *Game) print() {
-	pf := playFieldT{stonesA: game.stonesA, stonesB: game.stonesB}
+	pf := playFieldT{stonesA: game.stonesA, stonesB: game.stonesB, printLarge: true}
 	pf.printField()
 }
 

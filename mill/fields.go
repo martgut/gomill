@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"unicode"
+)
 
 // List of Fields
 type Fields []int
@@ -87,23 +90,35 @@ func (fields Fields) applyMove(move Move) Fields {
 }
 
 type playFieldT struct {
-	stonesA Fields
-	stonesB Fields
-	index   int
+	stonesA    Fields
+	stonesB    Fields
+	index      int
+	printLarge bool
 }
 
 func (pf *playFieldT) asChar() rune {
-	c := '.'
+	c := '+'
 	if pf.stonesA.contains(pf.index) {
 		c = 'x'
 	} else if pf.stonesB.contains(pf.index) {
 		c = 'o'
 	}
 	pf.index += 1
+	if pf.printLarge {
+		return unicode.ToUpper(c)
+	}
 	return c
 }
 
 func (pf *playFieldT) printField() {
+	if pf.printLarge {
+		pf.printFieldLarge()
+	} else {
+		pf.printFieldSmall()
+	}
+}
+
+func (pf *playFieldT) printFieldSmall() {
 	fmt.Printf("%c     %c     %c\n", pf.asChar(), pf.asChar(), pf.asChar())
 	fmt.Printf("  %c   %c   %c  \n", pf.asChar(), pf.asChar(), pf.asChar())
 	fmt.Printf("    %c %c %c    \n", pf.asChar(), pf.asChar(), pf.asChar())
@@ -111,4 +126,22 @@ func (pf *playFieldT) printField() {
 	fmt.Printf("    %c %c %c    \n", pf.asChar(), pf.asChar(), pf.asChar())
 	fmt.Printf("  %c   %c   %c  \n", pf.asChar(), pf.asChar(), pf.asChar())
 	fmt.Printf("%c     %c     %c\n", pf.asChar(), pf.asChar(), pf.asChar())
+}
+
+func (pf *playFieldT) printFieldLarge() {
+
+	fmt.Printf("%c--------%c--------%c\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|        |        |\n")
+	fmt.Printf("|  %c-----%c-----%c  |\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|  |     |     |  |\n")
+	fmt.Printf("|  |  %c--%c--%c  |  |\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|  |  |     |  |  |\n")
+	fmt.Printf("%c--%c--%c     %c--%c--%c\n", pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|  |  |     |  |  |\n")
+	fmt.Printf("|  |  %c--%c--%c  |  |\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|  |     |     |  |\n")
+	fmt.Printf("|  %c-----%c-----%c  |\n", pf.asChar(), pf.asChar(), pf.asChar())
+	fmt.Printf("|        |        |\n")
+	fmt.Printf("%c--------%c--------%c\n", pf.asChar(), pf.asChar(), pf.asChar())
+
 }
